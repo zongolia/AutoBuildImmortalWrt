@@ -55,15 +55,10 @@ PACKAGES="$PACKAGES luci-i18n-samba4-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # 静态文件服务器dufs(推荐)
 PACKAGES="$PACKAGES luci-i18n-dufs-zh-cn"
-# UPnP 支持（核心服务，使用 nftables 后端，避免 luci-app-upnp 依赖冲突）
+# UPnP 支持（带轻量级网页配置界面）
 PACKAGES="$PACKAGES miniupnpd-nftables"
-# ======== shell/custom-packages.sh =======
-# 合并imm仓库以外的第三方插件
-PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
-PACKAGES="$PACKAGES miniupnpd-nftables"
-# 可选：添加轻量级 UPnP 配置界面（成功率较高）
-PACKAGES="$PACKAGES luci-app-mini'supnpd"
-PACKAGES="$PACKAGES luci-i18n-miniupnpd-zh-cn"  # 可选中文翻译
+PACKAGES="$PACKAGES luci-app-miniupnpd"           # ← 正确写法：没有单引号
+PACKAGES="$PACKAGES luci-i18n-miniupnpd-zh-cn"   # 可选：中文翻译
 # 判断是否需要编译 Docker 插件
 if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
