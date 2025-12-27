@@ -31,6 +31,14 @@ else
   # 解压并拷贝ipk到packages目录
   sh shell/prepare-packages.sh
   ls -lah /home/build/immortalwrt/packages/
+
+  # ============= 添加 luci-app-partexp（分区扩容插件）==============
+  echo "🔄 正在添加 luci-app-partexp（分区扩容插件）..."
+  mkdir -p /home/build/immortalwrt/package/luci-app-partexp
+  git clone --depth=1 https://github.com/sirpdboy/luci-app-partexp.git /tmp/luci-app-partexp-temp
+  cp -r /tmp/luci-app-partexp-temp/* /home/build/immortalwrt/package/luci-app-partexp/
+  rm -rf /tmp/luci-app-partexp-temp
+  echo "✅ luci-app-partexp 已成功添加至 package 目录"
 fi
 # 输出调试信息
 echo "$(date '+%Y-%m-%d %H:%M:%S') - 开始构建固件..."
@@ -57,8 +65,11 @@ PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-dufs-zh-cn"
 # UPnP 支持（带轻量级网页配置界面）
 PACKAGES="$PACKAGES miniupnpd-nftables"
-PACKAGES="$PACKAGES luci-app-miniupnpd"           # ← 正确写法：没有单引号
-PACKAGES="$PACKAGES luci-i18n-miniupnpd-zh-cn"   # 可选：中文翻译
+PACKAGES="$PACKAGES luci-app-miniupnpd" # ← 正确写法：没有单引号
+PACKAGES="$PACKAGES luci-i18n-miniupnpd-zh-cn" # 可选：中文翻译
+# ======== shell/custom-packages.sh =======
+# 合并imm仓库以外的第三方插件
+PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
 # 判断是否需要编译 Docker 插件
 if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
@@ -81,7 +92,7 @@ fi
 # 构建镜像
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Building image with the following packages:"
 echo "$PACKAGES"
-make image PROFILE="generic" PACKAGES="$PACKAGES" FILES="/home/build/immortalwrt/files" ROOTFS_PARTSIZE=$PROFILE
+make image PROFILE="generic" PACKAGES="$PACKAGES" FILES="/home/build/immortalwrt/files" ROOTFS_PARTSIZE=10240
 if [ $? -ne 0 ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: Build failed!"
     exit 1
